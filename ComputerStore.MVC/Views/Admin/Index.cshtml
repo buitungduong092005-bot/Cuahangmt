@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Bảng Điều Khiển";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold">Chào mừng đến với Khu vực Quản Trị</h2>
+            <p class="text-muted">Chỉ có Nhân viên và Quản lý mới nhìn thấy trang này!</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng Doanh Thu</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="summary-revenue">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng Đơn Hàng</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="summary-orders">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Sản Phẩm</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="summary-products">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Khách Hàng</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="summary-customers">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Biểu đồ doanh thu năm nay</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top 5 Sản phẩm bán chạy</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="productChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-laptop"></i> Quản lý Sản phẩm</h5>
+                    <p class="card-text small">Thêm, sửa, xóa máy tính và linh kiện.</p>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-light text-primary fw-bold btn-sm">Vào Quản Lý</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-box"></i> Quản lý Đơn hàng</h5>
+                    <p class="card-text small">Duyệt đơn và giao hàng cho khách.</p>
+                    <a href="#" class="btn btn-light text-success fw-bold btn-sm">Vào Quản Lý</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> Quản lý Tài khoản</h5>
+                    <p class="card-text small">Khóa User, cấp quyền Nhân viên.</p>
+                    <a href="#" class="btn btn-light text-warning fw-bold btn-sm">Vào Quản Lý</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-store"></i> Quản lý Chi nhánh</h5>
+                    <p class="card-text small">Chỉnh sửa thông tin cửa hàng.</p>
+                    <a asp-controller="StoreBranches" asp-action="Index" class="btn btn-light text-info fw-bold btn-sm">Vào Quản Lý</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 1. Lấy dữ liệu Tổng hợp (Summary)
+        fetch('/Admin/GetDashboardSummary')
+            .then(response => response.json())
+            .then(data => {
+                // Format tiền tệ VNĐ
+                let formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+                document.getElementById('summary-revenue').innerText = formatter.format(data.revenue);
+                document.getElementById('summary-orders').innerText = data.orders + " Đơn";
+                document.getElementById('summary-products').innerText = data.products + " Cái";
+                document.getElementById('summary-customers').innerText = data.customers + " Người";
+            });
+
+        // 2. Vẽ biểu đồ Doanh thu (Line Chart)
+        fetch('/Admin/GetRevenueData')
+            .then(response => response.json())
+            .then(data => {
+                const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctxRevenue, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(item => item.label), // Cột mốc tháng
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: data.map(item => item.value), // Cột mốc tiền
+                            borderColor: 'rgba(78, 115, 223, 1)',
+                            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3 // Làm cong đường vẽ cho đẹp
+                        }]
+                    },
+                    options: { maintainAspectRatio: false }
+                });
+            });
+
+        // 3. Vẽ biểu đồ Top Sản Phẩm (Bar Chart)
+        fetch('/Admin/GetTopProducts')
+            .then(response => response.json())
+            .then(data => {
+                const ctxProduct = document.getElementById('productChart').getContext('2d');
+                new Chart(ctxProduct, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.productName), // Tên sản phẩm
+                        datasets: [{
+                            label: 'Đã bán (Chiếc)',
+                            data: data.map(item => item.quantity), // Số lượng bán
+                            backgroundColor: [
+                                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
+                            ]
+                        }]
+                    },
+                    options: { maintainAspectRatio: false }
+                });
+            });
+    </script>
+}

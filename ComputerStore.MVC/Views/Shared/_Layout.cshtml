@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ComputerStore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ComputerStore.MVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-desktop"></i> ComputerStore
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Manager") || User.IsInRole("Staff")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="Admin" asp-action="Index">
+                                    <i class="fas fa-user-shield"></i> Vùng Quản Trị
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                   
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div id="chat-wrapper" class="card shadow-lg" style="position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1050; border-radius: 10px 10px 0 0;">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-2" style="cursor: pointer;" onclick="toggleChat()">
+            <h6 class="m-0"><i class="fas fa-comments"></i> Chat Hỗ Trợ</h6>
+            <span id="chat-icon"><i class="fas fa-chevron-up"></i></span>
+        </div>
+        <div id="chatBody" class="card-body p-2 d-none" style="background-color: #f8f9fa;">
+            <input type="hidden" id="userInput" value="@(User.Identity.IsAuthenticated? User.Identity.Name : "Khách ẩn danh")" />
+
+            <ul id="messagesList" class="list-group list-group-flush mb-2" style="height: 250px; overflow-y: auto; font-size: 0.85rem; background: white; border: 1px solid #ddd; border-radius: 5px;">
+                <li class="list-group-item text-muted text-center italic" style="font-size: 0.75rem;">Chào mừng cậu đến với ComputerStore!</li>
+            </ul>
+
+            <div class="input-group">
+                <input type="text" id="messageInput" class="form-control form-control-sm" placeholder="Nhập tin nhắn..." autocomplete="off" />
+                <button id="sendButton" class="btn btn-primary btn-sm px-3"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - ComputerStore.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Bảo mật</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+
+    <script>
+        // Hàm đóng/mở khung chat nhanh
+        function toggleChat() {
+            var body = document.getElementById("chatBody");
+            var icon = document.getElementById("chat-icon");
+            if (body.classList.contains("d-none")) {
+                body.classList.remove("d-none");
+                icon.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            } else {
+                body.classList.add("d-none");
+                icon.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            }
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
