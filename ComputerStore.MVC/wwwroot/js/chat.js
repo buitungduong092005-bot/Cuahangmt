@@ -14,8 +14,8 @@ connection.on("ReceiveMessage", function (user, message) {
     document.getElementById("messagesList").appendChild(li);
 
     // Tự động cuộn xuống tin nhắn mới nhất
-    var chatBox = document.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
+    var messageListElement = document.getElementById("messagesList");
+    messageListElement.scrollTop = messageListElement.scrollHeight;
 });
 
 // 3. Khởi động kết nối
@@ -28,7 +28,6 @@ connection.start().then(function () {
 
 // 4. Sự kiện khi bấm nút "Gửi"
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    // Lấy tên người dùng hiện tại (nếu trống thì để là Ẩn danh)
     var user = document.getElementById("userInput").value || "Ẩn danh";
     var message = document.getElementById("messageInput").value;
 
@@ -39,7 +38,16 @@ document.getElementById("sendButton").addEventListener("click", function (event)
         return console.error(err.toString());
     });
 
-    // Xóa ô nhập sau khi gửi
+    // Xóa ô nhập sau khi gửi và nháy chuột lại vào ô
     document.getElementById("messageInput").value = "";
+    document.getElementById("messageInput").focus();
     event.preventDefault();
+});
+
+// 5. Tính năng bấm Enter để gửi tin nhắn
+document.getElementById("messageInput").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("sendButton").click();
+    }
 });

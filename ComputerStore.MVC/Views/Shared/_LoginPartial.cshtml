@@ -1,0 +1,30 @@
+﻿@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <ul class="navbar-nav">
+        <li class="nav-item d-flex align-items-center">
+            <span class="nav-link text-success fw-bold">
+                <i class="fas fa-user-circle"></i> Xin chào, @User.Identity.Name!
+            </span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Account" asp-action="Login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+        </li>
+        @*
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Đăng ký</a>
+        </li>
+        *@
+    </ul>
+}

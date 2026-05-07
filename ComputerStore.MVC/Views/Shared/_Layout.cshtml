@@ -26,7 +26,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
 
-                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Manager") || User.IsInRole("Staff")))
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Manager") || User.IsInRole("Staff")))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="Admin" asp-action="Index">
@@ -35,7 +35,8 @@
                             </li>
                         }
                     </ul>
-                   
+
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -53,7 +54,7 @@
             <span id="chat-icon"><i class="fas fa-chevron-up"></i></span>
         </div>
         <div id="chatBody" class="card-body p-2 d-none" style="background-color: #f8f9fa;">
-            <input type="hidden" id="userInput" value="@(User.Identity.IsAuthenticated? User.Identity.Name : "Khách ẩn danh")" />
+            <input type="hidden" id="userInput" value="@(User.Identity != null && User.Identity.IsAuthenticated ? User.Identity.Name : "Khách ẩn danh")" />
 
             <ul id="messagesList" class="list-group list-group-flush mb-2" style="height: 250px; overflow-y: auto; font-size: 0.85rem; background: white; border: 1px solid #ddd; border-radius: 5px;">
                 <li class="list-group-item text-muted text-center italic" style="font-size: 0.75rem;">Chào mừng cậu đến với ComputerStore!</li>

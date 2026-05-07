@@ -1,6 +1,7 @@
-﻿using ComputerStore.MVC.Models; // Đảm bảo đúng namespace Models của bạn
+﻿using ComputerStore.MVC.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using ComputerStore.MVC.Hubs; // Khai báo namespace chứa ChatHub
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,18 +12,20 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ComputerStoreDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. Cấu hình Đăng nhập bằng Cookie thuần túy (Không dùng Identity)
+// 3. Cấu hình Đăng nhập bằng Cookie thuần túy 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Đường dẫn bị văng về khi chưa đăng nhập
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Đường dẫn khi không có quyền
-        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Nhớ đăng nhập trong 7 ngày
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
     });
+
+// 4. Đăng ký dịch vụ SignalR
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -41,5 +44,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Định tuyến cho ChatHub
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
